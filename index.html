@@ -9,7 +9,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, user-scalable=no, minimal-ui">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black">
-  <meta name="apple-mobile-web-app-title" content="TuRT ToSS">           <!-- <= WEBAPP TITLE -->
+  <meta name="apple-mobile-web-app-title" content="Game Title">           <!-- <= WEBAPP TITLE -->
   <link rel="apple-touch-icon" href="icon.png">                           <!-- <= YOUR ICON -->
   <link rel="icon" href="icon.png">                                       <!-- <= YOUR ICON -->
   <!--
@@ -19,7 +19,7 @@
     but I wanted this template to be easy to use "manually" and for me it works fine
     to have a single PNG icon at 200x200. (200x200 is the minimum for facebok-sharing to use the og:image as thumbnail)
   -->
-  <title>TuRT ToSS</title>                                               <!-- <= WEBSITE TITLE -->
+  <title>Game Title</title>                                               <!-- <= WEBSITE TITLE -->
   <meta name="description" content="Game description">                    <!-- <= SITE DESCRIPTION as seen by web-search-engines -->
 
   <!-- Info as seen by sharing apps like WhatsApp or Facebook, so they can show a preview-image and description when you share the URL -->
@@ -31,13 +31,16 @@
   <style TYPE="text/css">
     /* ------- DEFINE BUTTON COLORS ------- */
     :root {
-      --btn: #55a358;
-      --btn--pressed: #3c803f;
+      --btn: #1288D1;
+      --btn--pressed: #29ADFF;
+
       --btnIcon: #222222;
       --btnIcon--pressed: #111111;
+
       --btn__analogBg: #232f37;
     }
     body { font-family: Verdana, Arial, sans-serif; padding: 0; margin: 0; outline: none; background: #222; overflow: hidden; }
+
     /* ------ POSITION GAME-CANVAS ------ */
     canvas#canvas {
       width: 512px; height: 512px;                /* max game size: 512px */
@@ -57,15 +60,19 @@
       .canvas-wrapper { margin-top: 80px; } }
     @media screen and (min-height: 880px) {       /* game has more top-margin on higher screens */
       .canvas-wrapper { margin-top: 180px; } }
+
+
     /* ------ pico8 control buttons [reset] [pause] [mute] ------ */
     .pico8_btns { text-align: center; }
     .pico8_el { width:82px; display:inline-block; margin: 1px; padding: 4px; text-align: center; color:#fff; background-color:#777; font-size: 9pt; cursor: pointer; }
     .pico8_el a{ text-decoration: none; color:#fff; }
     .pico8_el:hover{ background-color:#aaa; }
     .pico8_el:link{ background-color:#aaa; }
+
     /* ------ HELPER CLASSES FOR TOUCH ELEMENTS ------ */
     .touch-not-supported .show-if-touch { display: none; }
     .touch-supported .show-if-not-touch { display: none; }
+
     /* ------ HELPER CLASSES FOR STANDALONE ELEMENTS ------ */
     .not-standalone .show-if-standalone { display: none; }
     .is-standalone .show-if-not-standalone { display: none; }
@@ -93,6 +100,7 @@
   } else {
     document.body.className += " touch-not-supported";
   }
+
   // ----------------- IS STANDALONE WEBAPP? ----------------- %>
   if(
     window.location.href.indexOf("?standalone") !== -1 // to test on not-standalone devices: add "?standalone" to the URL
@@ -104,6 +112,7 @@
   } else {
     document.body.className += " not-standalone";
   }
+
   // To test both TOUCH and STANDALONE, add "?touch&standalone" to the URL
 </script>
 
@@ -119,6 +128,7 @@
       Module = {canvas: canvas};
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
+
     // ------ BLOCK CURSOR-KEYS FROM SCROLLING ------
     var onKeyDown_blocker= function(event) {
       event = event || window.event;
@@ -160,10 +170,14 @@
 
 <div class="show-if-touch">
   <div class="show-if-not-standalone">
-  
+    <div class="addToHomescreen__hint">
+      Add this website to your homescreen for better performance and audio!
+    </div>
   </div>
 </div>
-
+<div class="sourceLink">
+  Check the <a href="https://github.com/headjump/pico8_html_template">source-code</a>!
+</div>
 
 <style>
   .addToHomescreen__hint {
@@ -192,6 +206,7 @@
   .buttonset-use-3 .buttonset-3,
   .buttonset-use-4 .buttonset-4,
   .buttonset-use-5 .buttonset-5 { display: block; } /* Add more as you need them */
+
   /* actual buttons: */
   .btns { position: fixed; bottom: 0; width: 100%; direction:ltr; height: 90px; } /* wrapper for buttons - docks to bottom */
   .btn { /* generic button style: prevent text selection on touch */
@@ -332,6 +347,7 @@
              ↑
            ←   →      O  X
              ↓
+
       (If you just want a single touch-controller, simply remove the classes "buttonset" and "buttonset-1" below and remove the other touch-controller)
       -------------------------------->
       <div class="btns buttonset buttonset-1">
@@ -360,7 +376,9 @@
 
 
       <!------- BUTTONSET 2 - Left and Right ----------
+
            ←   →         X
+
       -------------------------------->
       <div class="btns buttonset buttonset-2">
         <div class="axis-leftRight btn btn--extra-wide pull-left">
@@ -401,16 +419,20 @@
               ↑
              ←O→          X
               ↓
+
         gives values to GPIO from [50..150,50..150]
         [100,100] is center, so to get the real value you have to subtract 100 for each axix,
         which gives you a range of [-50..50] for each axis. (This is because PICO8-GPIO only supports vals from 0..255)
+
         Example PICO8 code to get the axis:
           function analog_x() if(peek(0x5f81)==0)then return 0 else return peek(0x5f81)-100 end end
           function analog_y() if(peek(0x5f82)==0)then return 0 else return peek(0x5f82)-100 end end
+
         To also support normal buttons, you can so sth like this inside PICO8:
           speed_x = analog_x() / 5          -- gives values from -10 to 10 because input ranges from -50 to 50
           if(btn(0))then speed_x = -10 end  -- overrides speed if button is pressed
           if(btn(1))then speed_x = 10 end   -- .. this also ensures that the game can still be controlled via keyboard
+
       -------------------------------->
       <div class="btns buttonset buttonset-4">
         <div class="axis-analog btn btn--wide pull-left">
@@ -461,13 +483,16 @@
       pico8_buttons = [0, 0, 0, 0, 0, 0, 0, 0], // <= the first element in this array will be updated by the touch-buttons
       pico8_gpio = new Array(128),              // <= used to let pico8-cart change buttonset
       changeButtonset;                          // usage: changeButtonset(2) to activates .buttonset-2
+
     (function(){ // locally scoped
       var
         allAnalogSticks=document.querySelectorAll(".axis-analog .btn__stick");
+
       var setAnalogAxis=function(x,y){
         pico8_gpio[GPIO_ANALOG_X_INDEX]=x;
         pico8_gpio[GPIO_ANALOG_Y_INDEX]=y;
       };
+
       var resetAnalogSticks = function(sticks_or_null) {
         setAnalogAxis(100,100);
         sticks_or_null || (sticks_or_null=allAnalogSticks);
@@ -478,14 +503,17 @@
         }
       };
       resetAnalogSticks();
+
       changeButtonset=(function(){
         classHolder=document.getElementById("btns-markUsedButtonset");
         var current=-1;
+
         // poll for pico8_gpio to check if PICO8-game wants a buttonset-change
         window.setInterval(function(){
           var from_pico8 = pico8_gpio[GPIO_BUTTONSET_INDEX];
           if(!!from_pico8) changeButtonset(from_pico8);
         },100);
+
         return function(buttonset_number){
           if(current!==buttonset_number) {
             pico8_buttons[0] = 0; // reset pico btns
@@ -498,8 +526,10 @@
             current=buttonset_number;
           }
         };
+
       }());
-      changeButtonset(1); // set starting buttonset!
+      changeButtonset(4); // set starting buttonset!
+
       var
         updatePressedClasses = (function() {
           var target = document.getElementById("btns-markPressed");
@@ -585,7 +615,9 @@
               var
                 touches, touch,
                 toucharea = el.getBoundingClientRect();
+
               console.log(toucharea.left, toucharea.right);
+
               if(touches = evt.changedTouches){
                 for(var i=0; i<touches.length; i++){
                   touch=touches[i];
@@ -608,6 +640,7 @@
               if(touchid === null) return null;
               var touches,touch;
               if(touches=evt.changedTouches) {
+
                 for(var i=0; i<touches.length; i++){
                   touch=touches[i];
                   if(touch.identifier===touchid) { return touch; }
@@ -654,6 +687,7 @@
           el.addEventListener("touchend", function(evt){ killEvt(evt); btnUp(key); }, false);
           el.addEventListener("touchcancel", function(evt){ killEvt(evt); btnUp(key); }, false);
         };
+
       var
         axisXs=document.getElementsByClassName("axis-leftRight"),
         axisXYs=document.getElementsByClassName("axis-upDownLeftRight"),
@@ -662,12 +696,14 @@
         xBtns=document.getElementsByClassName("btn-fire-x"),
         oBtns=document.getElementsByClassName("btn-fire-o"),
         i;
+
       for(i=0; i<axisXs.length; i++){ addXAxis(axisXs[i]); }
       for(i=0; i<axisXYs.length; i++){ addXYAxis(axisXYs[i]); }
       for(i=0; i<axisYs.length; i++){ addYAxis(axisYs[i]); }
       for(i=0; i<axisAnalogs.length; i++){ addAnalogAxis(axisAnalogs[i]); }
       for(i=0; i<xBtns.length; i++){ addButton(xBtns[i], KEY.X); }
       for(i=0; i<oBtns.length; i++){ addButton(oBtns[i], KEY.O); }
+
       // prevent "tilt-zooming" when accidentally touching between the buttons
       document.getElementById("btns-wrapper").addEventListener("touchstart", function(evt){ evt.preventDefault(); }, false);
     })();
